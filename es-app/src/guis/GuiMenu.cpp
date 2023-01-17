@@ -560,43 +560,52 @@ void GuiMenu::openQuitMenu()
 		}
 	}
 
-	auto static reboot_sys_fx = [] {
-		Scripting::fireEvent("quit", "reboot");
-		Scripting::fireEvent("reboot");
-		if (quitES(QuitMode::REBOOT)) {
-			LOG(LogWarning) << "Restart terminated with non-zero result!";
-		}
-	};
+        if(Settings::getInstance()->getBool("ShowReboot"))
+        {
 
-	row.elements.clear();
-	if (confirm_quit) {
-		row.makeAcceptInputHandler([window] {
-			window->pushGui(new GuiMsgBox(window, "REALLY RESTART?", "YES", {reboot_sys_fx}, "NO", nullptr));
-		});
-	} else {
-		row.makeAcceptInputHandler(reboot_sys_fx);
-	}
-	row.addElement(std::make_shared<TextComponent>(window, "RESTART SYSTEM", Font::get(FONT_SIZE_MEDIUM), 0x777777FF), true);
-	s->addRow(row);
+          auto static reboot_sys_fx = [] {
+            Scripting::fireEvent("quit", "reboot");
+            Scripting::fireEvent("reboot");
+            if (quitES(QuitMode::REBOOT)) {
+              LOG(LogWarning) << "Restart terminated with non-zero result!";
+            }
+          };
 
-	auto static shutdown_sys_fx = [] {
-		Scripting::fireEvent("quit", "shutdown");
-		Scripting::fireEvent("shutdown");
-		if (quitES(QuitMode::SHUTDOWN)) {
-			LOG(LogWarning) << "Shutdown terminated with non-zero result!";
-		}
-	};
+          row.elements.clear();
+          if (confirm_quit) {
+            row.makeAcceptInputHandler([window] {
+              window->pushGui(new GuiMsgBox(window, "REALLY RESTART?", "YES", {reboot_sys_fx}, "NO", nullptr));
+            });
+          } else {
+            row.makeAcceptInputHandler(reboot_sys_fx);
+          }
+          row.addElement(std::make_shared<TextComponent>(window, "RESTART SYSTEM", Font::get(FONT_SIZE_MEDIUM), 0x777777FF), true);
+          s->addRow(row);
+        }
 
-	row.elements.clear();
-	if (confirm_quit) {
-		row.makeAcceptInputHandler([window] {
-			window->pushGui(new GuiMsgBox(window, "REALLY SHUTDOWN?", "YES", shutdown_sys_fx, "NO", nullptr));
-		});
-	} else {
-		row.makeAcceptInputHandler(shutdown_sys_fx);
-	}
-	row.addElement(std::make_shared<TextComponent>(window, "SHUTDOWN SYSTEM", Font::get(FONT_SIZE_MEDIUM), 0x777777FF), true);
-	s->addRow(row);
+        if(Settings::getInstance()->getBool("ShowShutdown"))
+        {
+
+          auto static shutdown_sys_fx = [] {
+            Scripting::fireEvent("quit", "shutdown");
+            Scripting::fireEvent("shutdown");
+            if (quitES(QuitMode::SHUTDOWN)) {
+              LOG(LogWarning) << "Shutdown terminated with non-zero result!";
+            }
+          };
+
+          row.elements.clear();
+          if (confirm_quit) {
+            row.makeAcceptInputHandler([window] {
+              window->pushGui(new GuiMsgBox(window, "REALLY SHUTDOWN?", "YES", shutdown_sys_fx, "NO", nullptr));
+            });
+          } else {
+            row.makeAcceptInputHandler(shutdown_sys_fx);
+          }
+          row.addElement(std::make_shared<TextComponent>(window, "SHUTDOWN SYSTEM", Font::get(FONT_SIZE_MEDIUM), 0x777777FF), true);
+          s->addRow(row);
+        }
+        
 	mWindow->pushGui(s);
 }
 
